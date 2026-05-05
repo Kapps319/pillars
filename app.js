@@ -12,8 +12,26 @@ function loadSavedState() {
     return JSON.parse(raw);
   } catch { return null; }
 }
+let _saveTimer = null;
 function saveState() {
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch { /* quota or disabled */ }
+  // Debounce + double-write (localStorage + sessionStorage backup)
+  clearTimeout(_saveTimer);
+  _saveTimer = setTimeout(() => {
+    try {
+      const json = JSON.stringify(state);
+      localStorage.setItem(STORAGE_KEY, json);
+      try { sessionStorage.setItem(STORAGE_KEY, json); } catch {}
+    } catch {}
+  }, 80);
+}
+function saveStateNow() {
+  // Synchronous save — used on pagehide/visibilitychange before iOS suspends.
+  clearTimeout(_saveTimer);
+  try {
+    const json = JSON.stringify(state);
+    localStorage.setItem(STORAGE_KEY, json);
+    try { sessionStorage.setItem(STORAGE_KEY, json); } catch {}
+  } catch {}
 }
 
 const $ = s => document.querySelector(s);
@@ -22,7 +40,7 @@ const id = () => Math.random().toString(36).slice(2, 9);
 const today = () => new Date().toISOString().slice(0, 10); // YYYY-MM-DD
 
 // ---------- State (starts empty per user request — fresh slate from May 5) ----------
-const state = {
+const _rawState = {
   startedOn: "2026-05-05",
   // I · To-Do
   tasks: [],
@@ -48,6 +66,25 @@ const state = {
     meals: [], // {id, name, p, c, f, date}
   },
 };
+
+// Deep Proxy so any mutation — nested or shallow — triggers an auto-save.
+function makeReactive(obj) {
+  if (obj === null || typeof obj !== "object") return obj;
+  for (const k of Object.keys(obj)) obj[k] = makeReactive(obj[k]);
+  return new Proxy(obj, {
+    set(target, prop, value) {
+      target[prop] = makeReactive(value);
+      saveState();
+      return true;
+    },
+    deleteProperty(target, prop) {
+      delete target[prop];
+      saveState();
+      return true;
+    },
+  });
+}
+const state = makeReactive(_rawState);
 
 // ---------- Helpers ----------
 function weekStartISO() {
@@ -567,12 +604,21 @@ function bindInstallCard() {
 
 // ---------- Init ----------
 function initApp() {
-  // Hydrate state from localStorage if available
-  const saved = loadSavedState();
+  // Hydrate state from localStorage (or sessionStorage backup) if available
+  let saved = loadSavedState();
+  if (!saved) {
+    try { const raw = sessionStorage.getItem(STORAGE_KEY); if (raw) saved = JSON.parse(raw); } catch {}
+  }
   if (saved && typeof saved === "object") {
-    Object.assign(state, saved);
+    // Assign through the Proxy so each value gets re-wrapped reactive
+    for (const k of Object.keys(saved)) state[k] = saved[k];
     if (!state.wellness) state.wellness = { waterToday: 0, waterDate: today(), supplements: [], weekStart: weekStartISO(), meals: [] };
   }
+
+  // Save aggressively when iOS may suspend the app
+  window.addEventListener("pagehide", saveStateNow);
+  window.addEventListener("beforeunload", saveStateNow);
+  document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden") saveStateNow(); });
   bindInstallCard();
   setGreeting();
   tickClock();

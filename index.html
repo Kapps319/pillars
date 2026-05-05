@@ -279,5 +279,14 @@
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
 <script type="module" src="app.js"></script>
+<script>
+  // Register service worker so iOS treats this as a true PWA
+  // (and stops wiping localStorage between standalone-app sessions).
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("sw.js").catch(() => {});
+    });
+  }
+</script>
 </body>
 </html>

@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Pillars — Personal Dashboard</title>
+<meta name="description" content="A simple five-pillar dashboard for daily check-ins." />
+<meta name="theme-color" content="#0b0d0c" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Pillars" />
+<link rel="manifest" href="manifest.webmanifest" />
+<link rel="apple-touch-icon" href="icon-192.png" />
+<link rel="icon" type="image/png" href="icon-192.png" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin />
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,600,700&f[]=jetbrains-mono@400,500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<!-- ============== LOCK SCREEN ============== -->
+<div id="lock-screen" class="lock-screen" role="dialog" aria-modal="true" aria-label="Enter passcode">
+  <div class="lock-inner">
+    <svg class="lock-logo" viewBox="0 0 64 64" aria-hidden="true" width="56" height="56">
+      <polygon points="12,52 52,52 42,32 22,32" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/>
+      <rect x="20" y="28" width="24" height="4" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/>
+      <polygon points="32,10 40,28 24,28" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/>
+    </svg>
+    <h2 class="lock-title">Pillars</h2>
+    <p class="lock-sub">Enter passcode</p>
+    <div class="lock-dots" id="lock-dots" aria-hidden="true">
+      <span class="lock-dot"></span>
+      <span class="lock-dot"></span>
+      <span class="lock-dot"></span>
+      <span class="lock-dot"></span>
+    </div>
+    <div class="lock-pad" id="lock-pad">
+      <button type="button" data-key="1">1</button>
+      <button type="button" data-key="2">2</button>
+      <button type="button" data-key="3">3</button>
+      <button type="button" data-key="4">4</button>
+      <button type="button" data-key="5">5</button>
+      <button type="button" data-key="6">6</button>
+      <button type="button" data-key="7">7</button>
+      <button type="button" data-key="8">8</button>
+      <button type="button" data-key="9">9</button>
+      <span></span>
+      <button type="button" data-key="0">0</button>
+      <button type="button" data-key="del" aria-label="Delete">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"/><line x1="18" y1="9" x2="12" y2="15"/><line x1="12" y1="9" x2="18" y2="15"/></svg>
+      </button>
+    </div>
+    <p class="lock-msg" id="lock-msg">&nbsp;</p>
+  </div>
+</div>
+
+<!-- ============== HEADER ============== -->
+<header class="topbar">
+  <div class="brand">
+    <svg class="logo" viewBox="0 0 64 64" aria-label="Pillars logo" width="32" height="32">
+      <!-- trapezoid base -->
+      <polygon points="12,52 52,52 42,32 22,32" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/>
+      <!-- horizontal bar -->
+      <rect x="20" y="28" width="24" height="4" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/>
+      <!-- small triangle on top -->
+      <polygon points="32,10 40,28 24,28" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/>
+    </svg>
+    <div class="brand-text">
+      <h1>Pillars</h1>
+      <p id="greeting" class="muted mono">— loading —</p>
+    </div>
+  </div>
+  <div class="topbar-actions">
+    <div class="clock mono" id="clock" aria-live="polite">--:--</div>
+    <button class="ghost-btn" id="export-btn" title="Export your data as JSON">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Export
+    </button>
+    <label class="ghost-btn" for="import-input" title="Import a saved JSON backup">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      Import
+    </label>
+    <input id="import-input" type="file" accept="application/json" hidden />
+    <button class="ghost-btn icon-only" data-theme-toggle title="Toggle theme" aria-label="Toggle theme"></button>
+  </div>
+</header>
+
+<!-- ============== INSTALL HINT ============== -->
+<aside class="install-card" id="install-card" hidden>
+  <button class="install-close" id="install-close" aria-label="Dismiss">×</button>
+  <h3>Add to your iPad home screen</h3>
+  <p class="muted small" style="margin: 0;">There's no download button — Apple doesn't let web apps offer one. Use Safari instead:</p>
+  <ol>
+    <li>Open this page in <b>Safari</b>.</li>
+    <li>Tap the <b>Share</b> icon at the top (square with an arrow).</li>
+    <li>Scroll down and tap <b>Add to Home Screen</b>.</li>
+    <li>Tap <b>Add</b>. Pillars will live on your home screen with the pyramid icon.</li>
+  </ol>
+</aside>
+
+<main class="grid">
+
+  <!-- ============== I · TO-DO ============== -->
+  <section class="card span-6" data-pillar="todo">
+    <header class="card-head">
+      <div>
+        <p class="eyebrow">Pillar I · To-Do</p>
+        <h2>Priority stack</h2>
+      </div>
+      <div class="seg" role="tablist" aria-label="Filter tasks">
+        <button class="seg-btn is-active" data-filter="all">All <span class="count" id="count-all">0</span></button>
+        <button class="seg-btn" data-filter="red">Red <span class="count" id="count-red">0</span></button>
+        <button class="seg-btn" data-filter="yellow">Yellow <span class="count" id="count-yellow">0</span></button>
+        <button class="seg-btn" data-filter="green">Green <span class="count" id="count-green">0</span></button>
+      </div>
+    </header>
+    <form class="task-input" id="task-form" autocomplete="off">
+      <div class="prio-pick" role="radiogroup" aria-label="Priority">
+        <button type="button" class="prio prio-red is-active" data-prio="red" role="radio" aria-checked="true" title="Red — urgent"></button>
+        <button type="button" class="prio prio-yellow" data-prio="yellow" role="radio" aria-checked="false" title="Yellow — soon"></button>
+        <button type="button" class="prio prio-green" data-prio="green" role="radio" aria-checked="false" title="Green — whenever"></button>
+      </div>
+      <input type="text" id="task-text" placeholder="Add a task — Enter to save" required maxlength="120" />
+      <button type="submit" class="primary-btn icon-add" aria-label="Add task">+</button>
+    </form>
+    <ul class="task-list" id="task-list" role="list"></ul>
+    <p class="empty-state" id="task-empty" hidden>No tasks yet.</p>
+  </section>
+
+  <!-- ============== II · SANCTUARY ============== -->
+  <section class="card span-6" data-pillar="sanctuary">
+    <header class="card-head">
+      <div>
+        <p class="eyebrow">Pillar II · Sanctuary</p>
+        <h2>Home & errands</h2>
+      </div>
+      <button class="tiny-btn" id="sanc-reset" title="Reset all">↺ Reset</button>
+    </header>
+    <p class="card-desc">Cleaning, plans, and errands. Tick when handled — anything left over is what to chase tomorrow.</p>
+    <form class="task-input" id="sanc-form" autocomplete="off">
+      <input type="text" id="sanc-text" placeholder="Add an errand or chore" required maxlength="120" />
+      <button type="submit" class="primary-btn icon-add" aria-label="Add item">+</button>
+    </form>
+    <ul class="sanc-list" id="sanc-list" role="list"></ul>
+    <p class="empty-state" id="sanc-empty" hidden>Nothing to clean or chase.</p>
+  </section>
+
+  <!-- ============== III · FINANCES ============== -->
+  <section class="card span-6" data-pillar="finances">
+    <header class="card-head">
+      <div>
+        <p class="eyebrow">Pillar III · Finances</p>
+        <h2>Current balance</h2>
+      </div>
+      <button class="tiny-btn" id="edit-balance">Edit balance</button>
+    </header>
+    <div class="balance-row">
+      <div class="balance-amount">
+        <span class="currency mono">AED</span>
+        <span class="amount" id="balance-amount">0.00</span>
+      </div>
+      <div class="month-summary">
+        <p class="muted small">Spent since May 5</p>
+        <p class="mono big" id="spent-total">AED 0.00</p>
+      </div>
+    </div>
+    <div class="tx-row">
+      <div class="tx-head">
+        <p class="eyebrow">Recent expenses</p>
+        <button class="tiny-btn" id="add-tx">+ Log expense</button>
+      </div>
+      <ul class="tx-list" id="tx-list" role="list"></ul>
+      <p class="empty-state" id="tx-empty">No expenses logged yet. Tap "Log expense" to start.</p>
+    </div>
+  </section>
+
+  <!-- ============== IV · PRIORITIES ============== -->
+  <section class="card span-6" data-pillar="priorities">
+    <header class="card-head">
+      <div>
+        <p class="eyebrow">Pillar IV · Priorities</p>
+        <h2>Focus list</h2>
+      </div>
+      <div class="seg" role="tablist" aria-label="Filter priorities">
+        <button class="seg-btn is-active" data-pfilter="all">All <span class="count" id="pcount-all">0</span></button>
+        <button class="seg-btn" data-pfilter="red">Red <span class="count" id="pcount-red">0</span></button>
+        <button class="seg-btn" data-pfilter="yellow">Yellow <span class="count" id="pcount-yellow">0</span></button>
+        <button class="seg-btn" data-pfilter="green">Green <span class="count" id="pcount-green">0</span></button>
+      </div>
+    </header>
+    <p class="card-desc">A second priority list for bigger projects, life moves, and goals — kept separate from daily to-dos.</p>
+    <form class="task-input" id="prio-form" autocomplete="off">
+      <div class="prio-pick" role="radiogroup" aria-label="Priority">
+        <button type="button" class="prio prio-red is-active" data-pprio="red" role="radio" aria-checked="true"></button>
+        <button type="button" class="prio prio-yellow" data-pprio="yellow" role="radio" aria-checked="false"></button>
+        <button type="button" class="prio prio-green" data-pprio="green" role="radio" aria-checked="false"></button>
+      </div>
+      <input type="text" id="prio-text" placeholder="Add a priority — bigger goal or project" required maxlength="120" />
+      <button type="submit" class="primary-btn icon-add" aria-label="Add priority">+</button>
+    </form>
+    <ul class="task-list" id="prio-list" role="list"></ul>
+    <p class="empty-state" id="prio-empty" hidden>No priorities yet.</p>
+  </section>
+
+  <!-- ============== V · WELLNESS ============== -->
+  <section class="card span-12" data-pillar="wellness">
+    <header class="card-head">
+      <div>
+        <p class="eyebrow">Pillar V · Wellness</p>
+        <h2>Diet · supplements · hydration</h2>
+      </div>
+      <button class="tiny-btn" id="wellness-reset" title="Reset week">↺ New week</button>
+    </header>
+
+    <div class="wellness-grid">
+      <!-- Hydration -->
+      <div class="wellness-block">
+        <h3>Hydration</h3>
+        <div class="hyd-head">
+          <span class="muted small">Today</span>
+          <span class="mono"><span id="water-count">0</span> / 8 cups</span>
+        </div>
+        <div class="cups" id="cups" role="group" aria-label="Water cups"></div>
+      </div>
+
+      <!-- Supplements weekly grid -->
+      <div class="wellness-block wellness-block--wide">
+        <h3>Supplements</h3>
+        <div class="supps-head">
+          <p class="muted small" style="margin:0;">Three slots a day — 10:00, 14:00, 21:00. Tick as you take them.</p>
+          <button class="tiny-btn" id="add-supp">+ Add supplement</button>
+        </div>
+        <div class="supp-table-wrap">
+          <table class="supp-table" id="supp-table">
+            <thead>
+              <tr>
+                <th class="supp-name-col">Supplement</th>
+                <!-- 7 day x 3 slot headers injected by JS -->
+              </tr>
+            </thead>
+            <tbody id="supp-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Macros -->
+      <div class="wellness-block wellness-block--wide">
+        <h3>Diet</h3>
+        <div class="macros-head">
+          <p class="muted small" style="margin:0;">Log each meal or snack. Totals roll up automatically.</p>
+          <button class="tiny-btn" id="add-meal">+ Log meal</button>
+        </div>
+        <div class="macro-totals">
+          <div class="macro-tot"><span class="muted small">Protein</span> <span class="mono"><span id="tot-p">0</span>g</span></div>
+          <div class="macro-tot"><span class="muted small">Carbs</span> <span class="mono"><span id="tot-c">0</span>g</span></div>
+          <div class="macro-tot"><span class="muted small">Fat</span> <span class="mono"><span id="tot-f">0</span>g</span></div>
+          <div class="macro-tot"><span class="muted small">Calories</span> <span class="mono"><span id="tot-k">0</span></span></div>
+        </div>
+        <ul class="meal-list" id="meal-list" role="list"></ul>
+        <p class="empty-state" id="meal-empty">No meals logged today.</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ============== MODALS ============== -->
+<dialog id="modal" class="modal">
+  <form method="dialog" id="modal-form">
+    <h3 id="modal-title">Edit</h3>
+    <div id="modal-body"></div>
+    <menu>
+      <button value="cancel" class="ghost-btn" type="button" id="modal-cancel">Cancel</button>
+      <button value="save" class="primary-btn" type="submit">Save</button>
+    </menu>
+  </form>
+</dialog>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>

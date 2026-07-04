@@ -1,0 +1,28 @@
+# Lead-score weights (Stage 3). Final score = clamp(base + sum(active weights), 0, 100).
+# Tune freely — golden tests in backend/tests/test_classifier_golden.py assert
+# only broad bands (BUY high / MENTION low), not exact numbers.
+
+# Base score per final intent label
+base:
+  BUY: 40
+  SELL: 40
+  MENTION: 10
+  SPAM: 0
+
+weights:
+  strong_keyword: 20      # a strong buy/sell phrase matched (stage-1)
+  product_match: 15       # campaign product keyword appears in the post
+  location_match: 10      # campaign location appears in the post
+  date_match: 5           # a concrete date was extracted
+  price_mention: 10       # a price/budget figure was extracted
+  urgency: 10             # urgency words ("today", "asap", ...)
+  contactability: 10      # DM/phone/handle/link present
+  recency_recent: 10      # posted within recency_recent_days
+  recency_stale: -10      # posted older than recency_stale_days
+  spam_penalty: -40       # spam markers present (also applied when label != SPAM)
+
+# LLM confidence blending: final confidence = rules_conf * (1-w) + llm_conf * w
+llm_confidence_weight: 0.6
+
+recency_recent_days: 7
+recency_stale_days: 60

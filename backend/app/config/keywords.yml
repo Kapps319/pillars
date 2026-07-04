@@ -1,0 +1,131 @@
+# Stage-1 rules configuration.
+# All patterns are case-insensitive Python regexes. Keep every language-specific
+# list here — adding Arabic later means adding a new file (keywords.ar.yml) and
+# pointing the pipeline at it; no code changes.
+language: en
+
+# Strong buy-intent phrases
+buy_patterns:
+  - '\blooking to buy\b'
+  - '\blooking for\b'
+  - '\bwant(ing)? to buy\b'
+  - '\bwanna buy\b'
+  - '\bwtb\b'
+  - '\biso\b'                       # "in search of"
+  - '\bin search of\b'
+  - '\bneed(s|ed)? \d+\b'           # "need 2 tickets"
+  - '\bneed (a|an|some|one|two|three|four|tickets?)\b'
+  - '\bready to buy\b'
+  - '\b(is )?anyone selling\b'
+  - "\\bwho('s| is) selling\\b"
+  - '\bwhere can i (buy|get|find)\b'
+  - '\bwilling to pay\b'
+  - '\bbudget( of| is)?\s?[\$€£]?\d'
+  - '\bcash ready\b'
+  - '\btake my money\b'
+
+# Strong sell-intent phrases
+sell_patterns:
+  - '\bselling\b'
+  - '\bfor sale\b'
+  - '\bwts\b'                       # "want to sell"
+  - '\bup for (sale|grabs)\b'
+  - '\basking (price|for)?\s?[\$€£]?\d'
+  - '\bwilling to (sell|let (it|them) go)\b'
+  - '\bmust (sell|go)\b'
+  - '\bprice is negotiable\b'
+  - '\bono\b'                       # "or nearest offer"
+  - '\bobo\b'                       # "or best offer"
+  - '\b(i )?have \d+ .{0,40}(available|for sale|to sell)\b'
+  - '\bavailable for (sale|pickup|purchase)\b'
+
+# Spam / promo / scam markers
+spam_patterns:
+  - '\bclick (here|the link)\b'
+  - '\bpromo ?code\b'
+  - '\bdiscount code\b'
+  - '\buse code\b'
+  - '\bfollow (and|&) (rt|retweet|share) to win\b'
+  - '\bgiveaway\b'
+  - '\bfree money\b'
+  - '\bguaranteed (profit|returns|win)\b'
+  - '\bcasino\b'
+  - '\bcrypto (pump|signal)s?\b'
+  - '\bwork from home and earn\b'
+  - '\bdm for (cheap|best) (deals|prices)\b.{0,40}\bwholesale\b'
+  - '\b100% (free|legit|genuine)\b'
+  - '\breplica\b'
+  - 'bit\.ly/'
+  - '\bearn \$\d+ (a|per) (day|week)\b'
+
+# Casual-mention / noise markers (opinion, news, jokes — pre-filter obvious non-leads)
+mention_patterns:
+  - '\b(so|too|crazy|insanely|ridiculously) expensive\b'
+  - "\\bcan('|no)t believe\\b"
+  - '\bprices? (are|is|have|went) (insane|crazy|up|through the roof)\b'
+  - '\bimagine paying\b'
+  - '\barticle\b'
+  - '\bbreaking news\b'
+  - '\baccording to\b'
+
+# Urgency words boost the lead score
+urgency_patterns:
+  - '\btoday\b'
+  - '\btonight\b'
+  - '\basap\b'
+  - '\burgent(ly)?\b'
+  - '\bright now\b'
+  - '\bimmediately\b'
+  - '\bthis (week|weekend)\b'
+  - '\blast minute\b'
+
+# Contactability: the poster can actually be reached
+contact_patterns:
+  - '\bdm me\b'
+  - '\bdms? (are )?open\b'
+  - '\bpm me\b'
+  - '\bmessage me\b'
+  - '\btext me\b'
+  - '\binbox me\b'
+  - '\bwhatsapp\b'
+  - '\btelegram\b'
+  - '\bemail me\b'
+  - '\bcontact me\b'
+
+# Price interest signals ("price?", "how much")
+price_question_patterns:
+  - '\bhow much\b'
+  - '\bprice\?'
+  - "\\bwhat('s| is) the price\\b"
+  - '\basking price\b'
+
+# Simple gazetteer used by location extraction (extend freely)
+locations:
+  - Abu Dhabi
+  - Dubai
+  - London
+  - Manchester
+  - New York
+  - NYC
+  - Los Angeles
+  - Miami
+  - Paris
+  - Berlin
+  - Munich
+  - Madrid
+  - Barcelona
+  - Doha
+  - Riyadh
+  - Jeddah
+  - Cairo
+  - Amsterdam
+  - Monaco
+  - Singapore
+  - Tokyo
+  - Melbourne
+  - Austin
+  - Las Vegas
+  - Silverstone
+  - Monza
+  - Toronto
+  - São Paulo

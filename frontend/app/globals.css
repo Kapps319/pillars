@@ -1,0 +1,75 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 60 8% 98%;
+    --foreground: 0 0% 4%;
+    --card: 60 10% 99%;
+    --card-foreground: 0 0% 4%;
+    --primary: 213 67% 50%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 60 6% 93%;
+    --secondary-foreground: 0 0% 10%;
+    --muted: 60 6% 93%;
+    --muted-foreground: 40 3% 42%;
+    --accent: 213 67% 95%;
+    --accent-foreground: 213 67% 30%;
+    --destructive: 0 74% 46%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 45 12% 87%;
+    --input: 45 12% 84%;
+    --ring: 213 67% 50%;
+
+    /* Chart tokens (validated palette — see backend docs / dataviz notes)   */
+    --viz-surface: #fcfcfb;
+    --viz-buy: #2a78d6;
+    --viz-sell: #1baf7a;
+    --viz-mention: #eda100;
+    --viz-spam: #e34948;
+    --viz-series-1: #2a78d6;
+    --viz-grid: #e1e0d9;
+    --viz-axis: #c3c2b7;
+    --viz-muted-ink: #898781;
+  }
+
+  .dark {
+    --background: 0 0% 5%;
+    --foreground: 0 0% 100%;
+    --card: 60 2% 10%;
+    --card-foreground: 0 0% 100%;
+    --primary: 213 75% 56%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 60 2% 15%;
+    --secondary-foreground: 0 0% 95%;
+    --muted: 60 2% 15%;
+    --muted-foreground: 48 8% 74%;
+    --accent: 213 40% 18%;
+    --accent-foreground: 213 75% 80%;
+    --destructive: 0 72% 55%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 60 2% 17%;
+    --input: 60 2% 20%;
+    --ring: 213 75% 56%;
+
+    --viz-surface: #1a1a19;
+    --viz-buy: #3987e5;
+    --viz-sell: #199e70;
+    --viz-mention: #c98500;
+    --viz-spam: #e66767;
+    --viz-series-1: #3987e5;
+    --viz-grid: #2c2c2a;
+    --viz-axis: #383835;
+    --viz-muted-ink: #898781;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+}
